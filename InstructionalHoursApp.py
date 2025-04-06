@@ -18,6 +18,18 @@ data = load_data()
 # Title
 st.title("Ohio School District Instructional Hours (2024–25)")
 
+st.markdown("""
+### Key Takeaways
+
+One of the central hypotheses explored in this analysis was whether increasing instructional hours has a measurable impact on student performance. The regression models and scatter plots indicate that there is indeed a positive relationship, though not overwhelmingly strong. The data suggest that student performance, as measured by the Performance Index, tends to improve as instructional time increases — up to a point. The quadratic regression model estimates that **optimal instructional hours are around 1,167 hours per year**, a figure higher than what most Ohio districts currently offer.
+
+However, when we examine which districts are actually able to provide over 1,200 hours of instruction, a clear pattern emerges: they are overwhelmingly **small** districts. Larger districts, particularly those serving more than 10,000 students, are almost completely absent from the list of high-hour systems. This limitation among large districts is unlikely to be incidental. Instead, it likely reflects **structural and contractual constraints**, including limits set by **collective bargaining agreements (CBAs)** that define teacher work hours, prep time, and student contact limits.
+
+This insight is reinforced by visualizations comparing instructional time to district enrollment, where it becomes clear that no very large public district exceeds the 1,200-hour threshold. These findings suggest that efforts to expand instructional time across the state — particularly in large urban systems — will require a **collaborative approach**. This includes working closely with **district leadership and teaching unions** to explore options that balance instructional quality with sustainable working conditions.
+
+Moreover, when comparing public districts with more than 1,200 hours to those with fewer, we see mixed results on factors like **chronic absenteeism**, **income**, and **expenditures per student**. While high-hour districts sometimes outperform, it's clear that **time alone isn't the only factor** — but it may be a necessary one. In combination with strategic supports and funding, extending the school year could be an important tool for improving outcomes, particularly in high-poverty or high-need areas.
+""")
+
 # Histogram with quartiles
 st.subheader("Distribution of Average Instructional Hours")
 fig1, ax1 = plt.subplots()
@@ -29,50 +41,6 @@ ax1.set_ylabel("Number of Districts")
 ax1.legend()
 ax1.grid(True)
 st.pyplot(fig1)
-
-# Top and Bottom 10 Districts
-st.subheader("Top 10 and Bottom 10 Districts by Instructional Hours")
-top10 = data.sort_values(by='Avg Instructional Hours', ascending=False).head(10)
-bottom10 = data.sort_values(by='Avg Instructional Hours').head(10)
-
-fig3, ax3 = plt.subplots(figsize=(10, 6))
-sns.barplot(data=top10, y='District Name', x='Avg Instructional Hours', ax=ax3)
-ax3.set_title("Top 10 Districts")
-ax3.set_xlabel("Average Instructional Hours")
-st.pyplot(fig3)
-
-fig4, ax4 = plt.subplots(figsize=(10, 6))
-sns.barplot(data=bottom10, y='District Name', x='Avg Instructional Hours', ax=ax4)
-ax4.set_title("Bottom 10 Districts")
-ax4.set_xlabel("Average Instructional Hours")
-st.pyplot(fig4)
-
-# Downloadable Data Table
-st.subheader("District Instructional Hours Table")
-search = st.text_input("Search for a district name")
-filtered = data[data['District Name'].str.contains(search, case=False, na=False)]
-filtered = filtered.sort_values(by='Avg Instructional Hours', ascending=False)
-
-# Conditional formatting
-def highlight_rows(row):
-    if row['Avg Instructional Hours'] < 1001:
-        return ['background-color: red'] * len(row)
-    elif 1001 <= row['Avg Instructional Hours'] <= 1054:
-        return ['background-color: orange'] * len(row)
-    else:
-        return [''] * len(row)
-
-styled_df = filtered.style.apply(highlight_rows, axis=1)
-st.write(styled_df.to_html(escape=False), unsafe_allow_html=True)
-
-csv = filtered.to_csv(index=False)
-st.download_button(
-    "Download CSV",
-    csv,
-    "instructional_hours_by_district.csv",
-    "text/csv",
-    key='download-csv'
-)
 
 # Load full dataset with predictors
 @st.cache_data
@@ -256,6 +224,49 @@ ax_rural.set_xlabel("District Type")
 ax_rural.set_ylabel("Average Instructional Hours")
 st.pyplot(fig_rural)
 
+# Top and Bottom 10 Districts
+st.subheader("Top 10 and Bottom 10 Districts by Instructional Hours")
+top10 = data.sort_values(by='Avg Instructional Hours', ascending=False).head(10)
+bottom10 = data.sort_values(by='Avg Instructional Hours').head(10)
+
+fig3, ax3 = plt.subplots(figsize=(10, 6))
+sns.barplot(data=top10, y='District Name', x='Avg Instructional Hours', ax=ax3)
+ax3.set_title("Top 10 Districts")
+ax3.set_xlabel("Average Instructional Hours")
+st.pyplot(fig3)
+
+fig4, ax4 = plt.subplots(figsize=(10, 6))
+sns.barplot(data=bottom10, y='District Name', x='Avg Instructional Hours', ax=ax4)
+ax4.set_title("Bottom 10 Districts")
+ax4.set_xlabel("Average Instructional Hours")
+st.pyplot(fig4)
+
+# Downloadable Data Table
+st.subheader("District Instructional Hours Table")
+search = st.text_input("Search for a district name")
+filtered = data[data['District Name'].str.contains(search, case=False, na=False)]
+filtered = filtered.sort_values(by='Avg Instructional Hours', ascending=False)
+
+# Conditional formatting
+def highlight_rows(row):
+    if row['Avg Instructional Hours'] < 1001:
+        return ['background-color: red'] * len(row)
+    elif 1001 <= row['Avg Instructional Hours'] <= 1054:
+        return ['background-color: orange'] * len(row)
+    else:
+        return [''] * len(row)
+
+styled_df = filtered.style.apply(highlight_rows, axis=1)
+st.write(styled_df.to_html(escape=False), unsafe_allow_html=True)
+
+csv = filtered.to_csv(index=False)
+st.download_button(
+    "Download CSV",
+    csv,
+    "instructional_hours_by_district.csv",
+    "text/csv",
+    key='download-csv'
+)
 
 
 
