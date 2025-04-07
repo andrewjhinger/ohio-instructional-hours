@@ -105,9 +105,11 @@ st.pyplot(fig_opt)
 st.subheader("Instructional Hours vs Chronic Absenteeism")
 fig_abs, ax_abs = plt.subplots()
 sns.scatterplot(data=reg_df, x='Avg Instructional Hours', y='Chronic Absenteeism Rate', ax=ax_abs)
+ax_abs.axhline(reg_df['Chronic Absenteeism Rate'].mean(), color='red', linestyle='--', label='Mean Absenteeism')
 ax_abs.set_xlabel("Average Instructional Hours")
 ax_abs.set_ylabel("Chronic Absenteeism Rate")
 ax_abs.set_title("Instructional Hours vs Chronic Absenteeism")
+ax_abs.legend()
 ax_abs.grid(True)
 st.pyplot(fig_abs)
 
@@ -224,6 +226,7 @@ ax_rural.set_xlabel("District Type")
 ax_rural.set_ylabel("Average Instructional Hours")
 st.pyplot(fig_rural)
 
+
 # Top and Bottom 10 Districts
 st.subheader("Top 10 and Bottom 10 Districts by Instructional Hours")
 top10 = data.sort_values(by='Avg Instructional Hours', ascending=False).head(10)
@@ -267,8 +270,6 @@ st.download_button(
     "text/csv",
     key='download-csv'
 )
-
-
 
 
 
